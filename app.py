@@ -11,6 +11,13 @@ def url_response(url):
     except requests.RequestException:
         return url, "Not found"
 
+def format_status(status):
+    """Format the status code for display."""
+    if status == 200:
+        return "Link accessible"
+    else:
+        return str(status)
+
 st.title("🔗 Bulk URL Checker")
 
 # --- Input section ---
@@ -45,16 +52,24 @@ if st.button("Check"):
     if not urls:
         st.warning("Please upload a CSV or paste some URLs.")
     else:
-        st.write(f"Found **{len(urls)}** URLs to check.")
-        st.write("Checking... please wait")
+        st.write(f"Found {len(urls)} URLs to check.")
+
+        # Create a placeholder for the status message
+        status_placeholder = st.empty()
+        status_placeholder.write("Checking... please wait")
 
         # Run concurrent checks
         with ThreadPoolExecutor() as executor:
             results = list(executor.map(url_response, urls))
 
-        # Show results
+        # Clear the "Checking..." message
+        status_placeholder.empty()
+
+        # Process results and format status codes
         results_df = pd.DataFrame(results, columns=["URL", "Status"])
-        results_df["Status"] = results_df["Status"].astype(str)
+        results_df["Status"] = results_df["Status"].apply(format_status)
+
+        # Show results
         st.dataframe(results_df)
 
         # Download option
