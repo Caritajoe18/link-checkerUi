@@ -14,7 +14,7 @@ def url_response(url):
 st.title("🔗 Bulk URL Checker")
 
 # --- Input section ---
-st.subheader("1️Provide URLs")
+st.subheader("Provide URLs")
 
 # File uploader
 uploaded_file = st.file_uploader("Upload a CSV file with URLs", type=["csv"])
